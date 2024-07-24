@@ -1,0 +1,86 @@
+import tkinter 
+from tkinter import *
+from tkinter import ttk
+from tkinter import messagebox
+import math 
+
+root = Tk()
+root.title("Calculator")
+root.geometry("400x450+550+100")
+root.resizable(False,False)
+root.configure(bg="lightgray")
+
+
+def calculer():
+    try:
+        num1 = float(num1_entry.get())
+        num2 = float(num2_entry.get())
+        operation = cb1.get()
+        if operation == 'addition':
+            result = num1 + num2
+        elif operation == 'soustraction':
+            result = num1 - num2
+        elif operation == 'multiplication':
+            result = num1 * num2
+        elif operation == 'division':
+            try:
+                result = num1 / num2
+            except Exception:
+                messagebox.showerror("Error","You can't divide by zero !")
+        else:
+            result = "invalid operation"
+        res_label.configure(text=str(result))
+        num1_entry.delete(0,END)
+        num2_entry.delete(0,END)
+    except ValueError:
+        res_label.configure(text="invalid input")
+        
+title_label = Label(root, text = "Calculator",font=('Arial',20,'bold'),bg="lightgray")
+title_label.pack(pady=12)
+#_______________________________________________________________________________________
+def entry_focus_in(event):
+    if num1_entry.get()=="Enter the first number...":
+        num1_entry.delete(0,END)
+        num1_entry.configure(fg="black")
+        
+def entry_focus_out(event):
+    if num1_entry.get()=="":
+        num1_entry.insert(0,"Enter the first number...")
+        num1_entry.configure(fg="gray")
+        
+num1_entry = Entry(root, width = 30,font=('Arial',12,'bold'))
+num1_entry.pack(pady=12)
+num1_entry.insert(0,"Enter the first number...")
+num1_entry.bind("<FocusIn>",entry_focus_in)
+num1_entry.bind("<FocusOut>",entry_focus_out)
+num1_entry.configure(fg="gray")
+#________________________________________________________________________________________
+def entry_focus_in2(event):
+    if num2_entry.get()=="Enter the second number...":
+        num2_entry.delete(0,END)
+        num2_entry.configure(fg="black")
+        
+def entry_focus_out2(event):
+    if num2_entry.get()=="":
+        num2_entry.insert(0,"Enter the second number...")
+        num2_entry.configure(fg="gray")
+num2_entry = Entry(root, width = 30,font=('Arial',12,'bold'))
+num2_entry.pack(pady=12)
+num2_entry.insert(0,"Enter the second number...")
+num2_entry.bind("<FocusIn>",entry_focus_in2)
+num2_entry.bind("<FocusOut>",entry_focus_out2) 
+num2_entry.configure(fg="gray")
+#_________________________________________________________________________________________
+                             
+operations = ['addition', 'soustraction', 'multiplication', 'division']
+cb1 = ttk.Combobox(root,values = operations)
+cb1.pack(pady=12)
+
+
+calculer_button = Button(root,text="Calculate",font=("arial",12,"bold"), width=12 ,relief="flat", command=calculer)
+calculer_button.pack(pady=12)
+
+res_label=Label(root,text="",width=15,font=('Arial',20,'bold'),bg="lightgray")
+res_label.pack(pady=12)
+
+root.mainloop()
