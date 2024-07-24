@@ -1,0 +1,101 @@
+import tkinter as tk
+from tkinter import simpledialog,messagebox
+
+root =tk.Tk()
+root.resizable(False,False)
+root.geometry('500x500+450+50')
+
+title_Label = tk.Label(root,text="Contact Book",fg="Blue",font=("arial",20,"bold"))
+title_Label.pack(pady=15)
+
+#________________________________Class || functions _________________________________
+class Contact:
+    def __init__(self, name, phone, email, address):
+        self.name=name
+        self.phone=phone
+        self.email=email
+        self.address=address
+        
+#initialize the list of contact 
+contacts = []
+
+def add_contact():
+    name = simpledialog.askstring("Name","Enter the contact's name")
+    phone = simpledialog.askstring("phone","Enter the contact's phone")
+    email = simpledialog.askstring("Email","Enter the contact's email")
+    address = simpledialog.askstring("Adress","Enter the contact's address")
+    
+    if name and phone and email and address:
+        new_contact = Contact(name,phone,email,address)
+        contacts.append(new_contact)
+        messagebox.showinfo("Success", "Contact added successfully!")
+    else:
+        messagebox.showerror("Error","Please fill all fields")
+        
+
+def view_contact():
+    window = tk.Toplevel(root)
+    window.title("contact list")
+    window.geometry("400x400+200+100")
+    
+    listContacts = tk.Listbox(window)
+    listContacts.pack(fill = tk.BOTH, expand =True)
+    
+    for c in contacts:
+        listContacts.insert(tk.END,f"{c.name} || {c.phone}")
+
+def search_contact():
+    qst = simpledialog.askstring("Search","Enter name or phone number :")
+    res = [c for c in contacts 
+           if qst.lower() in c.name.lower()
+           or qst.lower() in c.email.lower()
+          ]
+    if res:
+        qst_res = tk.Toplevel(root)
+        qst_res.title("Search Results")
+        qst_res.geometry("400x400")
+        
+        listSearch = tk.Listbox(qst_res)
+        listSearch.pack(fill = tk.BOTH, expand =True)
+        
+        for c in res:
+            listSearch.insert(tk.END,f"{c.name} | {c.phone} | {c.email} | {c.address}")
+    else:
+        messagebox.showinfo("No Results","No contacts found.")
+
+def update_contact():
+    contact_name = simpledialog.askstring("Update","Enter the contact's name:")
+    for c  in contacts :
+        if c.name == contact_name:
+            c.phone= simpledialog.askstring("phone","Enter new phone number",initialvalue=c.phone)
+            c.email= simpledialog.askstring("phone","Enter new email",initialvalue=c.email)
+            c.address= simpledialog.askstring("phone","Enter new address",initialvalue=c.address)
+            messagebox.showinfo("Success","Contact Updated successfully!")
+            return
+            
+def delete_contact():
+    contact_name = simpledialog.askstring("Delete","Enter the contact's name:")
+    global contacts
+    contacts = [c for c in contacts 
+               if c.name != contact_name
+               ]
+    messagebox.showinfo("Success", "Contact deleted successfully!")
+    
+    
+#________________________________________Buttons__________________________________________
+add_button = tk.Button(root,text="Add Contact",font=("arial",14,"bold"),fg="white",bg="blue",relief="flat", width=12, command=add_contact)
+add_button.pack(pady=15)
+
+view_button = tk.Button(root,text="View Contacts",font=("arial",14,"bold"),fg="white",bg="blue",relief="flat", width=12, command=view_contact)
+view_button.pack(pady=15)
+
+search_button = tk.Button(root,text="Search Contact",font=("arial",14,"bold"),fg="white",bg="blue",relief="flat", width=12, command=search_contact)
+search_button.pack(pady=15)
+
+update_button = tk.Button(root,text="Update Contact",font=("arial",14,"bold"),fg="white",bg="blue",relief="flat", width=12, command=update_contact)
+update_button.pack(pady=15)
+
+delete_button = tk.Button(root,text="Delete Contact",font=("arial",14,"bold"),fg="white",bg="blue",relief="flat", width=12, command=delete_contact)
+delete_button.pack(pady=15)
+
+root.mainloop()
