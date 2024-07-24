@@ -1,0 +1,120 @@
+import tkinter
+from tkinter import *
+from datetime import datetime
+
+root=Tk()
+root.title("TO-DO List")
+root.geometry("580x650+350+0")
+root.resizable(False,False)
+root.configure(bg="whitesmoke")
+
+tasks=[]
+
+def add():
+    task = entry_task.get()
+    date= entry_date.get()
+    if task and date:
+        task_frame = Frame(taskFrame,bg="whitesmoke",bd=1, relief="solid")
+        task_frame.pack(fill='x',padx=10,pady=5)
+        
+        taskLabel=Label(task_frame,text=task,bg="whitesmoke",fg="#333",font =("Helvetica",12))
+        taskLabel.pack(side='left',padx=10,pady=5)
+        
+        dateLabel=Label(task_frame,text=date,bg="whitesmoke",fg="#666",font =("Helvetica",10))
+        dateLabel.pack(side='right',padx=10,pady=5)
+        
+        Delete_buton=Button(task_frame,text="❌",width=4,font=("arial",12,"bold"),fg="red",bg="whitesmoke",relief="flat",command=lambda:delete(task_frame))
+        Delete_buton.pack(side='right',padx=5)
+        update_buton=Button(task_frame,text="✏️",width=5,font=("arial",12,"bold"),fg="blue",bg="whitesmoke",relief="flat",command=lambda:update(taskLabel,dateLabel))
+        update_buton.pack(side='right',padx=5)
+        mark_buton=Button(task_frame,text="✔️",width=5,font=("arial",12,"bold"),fg="green",bg="whitesmoke",relief="flat",command=lambda:mark(taskLabel))
+        mark_buton.pack(side='right',padx=5)
+        
+        tasks.append((task,date,Delete_buton,update_buton,mark_buton))
+        
+        entry_task.delete(0,END)
+        entry_date.delete(0,END)
+        
+
+def delete(task_frame):
+    task_frame.destroy()
+    
+def update(taskLabel, dateLabel):
+    newTask=entry_task.get()
+    newDate= entry_date.get()
+    if newTask and newDate:
+        taskLabel.configure(text=newTask)
+        entry_task.delete(0,END)
+        dateLabel.configure(text=newDate)
+        entry_date.delete(0,END)
+
+def mark(taskLabel):
+    if "overstrike" in taskLabel['font']:
+        taskLabel.configure(font =("Helvetica",12),fg="#333",relief="flat")
+    else:
+        taskLabel.configure(font =("Helvetica",12,"overstrike"),fg="#999",relief="flat")
+    
+def sort():
+    tasks.sort(key = lambda x: datetime.strptime(x[1],"%Y-%m-%d"), reverse=True)
+    for widget in taskFrame.winfo_children():
+        widget.destroy()
+        #recreation des widgets
+    for task,date,frame, taskLabel, dateLabel in tasks:
+        task_frame = Frame(taskFrame,bg="whitesmoke",bd=1, relief="solid")
+        task_frame.pack(fill='x',padx=10,pady=5)
+        
+        date_frame = Frame(taskFrame,bg="#fff")
+        date_frame.pack(fill='y',expand=True)
+
+        taskLabel=Label(task_frame,text=task,bg="whitesmoke",fg="#333", font=("Arial",12))
+        taskLabel.pack(side='left',padx=10,pady=5)
+        
+        dateLabel=Label(task_frame,text=date, bg="whitesmoke",fg="#666", font=("Arial",10))
+        dateLabel.pack(side='right',padx=10, pady=5)
+
+        Delete_buton=Button(task_frame,text="❌",width=4,font=("arial",12,"bold"),fg="red",bg="whitesmoke",relief="flat",command=lambda frame = task_frame: delete(frame))
+        Delete_buton.pack(side='right',padx=5)
+        update_buton=Button(task_frame,text="✏️",width=5,font=("arial",12,"bold"),fg="blue",bg="whitesmoke",relief="flat",command=lambda label = taskLabel, date=dateLabel: update(label,date))
+        update_buton.pack(side='right',padx=5)
+        mark_buton=Button(task_frame,text="✔️",width=5,font=("arial",12,"bold"),fg="green",bg="whitesmoke",relief="flat",command=lambda label = taskLabel : mark(label))
+        mark_buton.pack(side='left',padx=5)
+    
+title = Label(root,text="What's Your Plan For Today ?",font=("Helvetica", 21),bg="whitesmoke",fg="#333")
+title.pack(pady=20)
+#--------------------------------placeholder for the task label--------------------------------------- 
+def entry_focus_in(event):
+    if entry_task.get()=="Enter Task...":
+        entry_task.delete(0,END)
+        entry_task.configure(fg="black")
+
+def entry_focus_out(event):
+    if entry_task.get()=="":
+        entry_task.insert(0,"Enter Task...")
+        entry_task.configure(fg="gray")
+#--------------------------------placeholder for the task label--------------------------------------- 
+def entry_focus_in2(event):
+    if entry_date.get()=="YYYY-MM-DD":
+        entry_date.delete(0,END)
+        entry_date.configure(fg="black")
+def entry_focus_out2(event):
+    if entry_date.get()=="":
+        entry_date.insert(0,"YYYY-MM-DD")
+        entry_date.configure(fg="gray")
+#Ajout du champs de saisie
+entry_task= Entry(root, width=50,font=("Helvetica", 15),fg="gray",relief="solid",bd=1)
+entry_task.pack(padx=10, pady=20)
+entry_task.insert(0,"Enter Task...")
+entry_task.bind("<FocusIn>",entry_focus_in)
+entry_task.bind("<FocusOut>",entry_focus_out)
+entry_date=Entry(root, width=20,font=("Helvetica",15),fg="gray",relief="solid",bd=1)
+entry_date.pack(padx=20, pady=5)
+entry_date.insert(0,"YYYY-MM-DD")
+entry_date.bind("<FocusIn>",entry_focus_in2)
+entry_date.bind("<FocusOut>",entry_focus_out2)
+
+add_button = Button(root,text="Add Task",width=9,height=1,font=("arial",12),fg="#fff",bg="#3697f5",relief="flat",command=lambda:add()).pack(pady=10)
+taskFrame = Frame(root, bg = "whitesmoke", width=475, height=400,bd=0)
+taskFrame.pack(padx=25, pady=20)
+
+sort_button = Button(root, text="Sort By Date", width=15,font=("arial", 12), fg="#fff",bg="#3697f5",relief="flat", command=lambda:sort()).pack(pady=20)
+root.mainloop()
